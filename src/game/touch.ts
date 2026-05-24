@@ -8,7 +8,7 @@ const DPAD: ReadonlyArray<readonly [Direction, string, string]> = [
 ]
 
 const ACTIONS: ReadonlyArray<readonly [Action, string, string]> = [
-  ['next', 'btn-next', 'A'],
+  ['next', 'btn-next', 'Enter'],
   ['restart', 'btn-restart', 'R'],
   ['giveup', 'btn-giveup', 'G'],
 ]

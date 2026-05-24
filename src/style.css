@@ -80,6 +80,10 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 
+#actions button {
+  font-size: 13px;
+}
+
 #touch button:active {
   background: rgba(255, 255, 255, 0.35);
 }
