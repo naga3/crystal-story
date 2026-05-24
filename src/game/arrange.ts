@@ -2,7 +2,7 @@ import { BRICK, CRYSTAL, EMPTY, type Board } from './board.ts'
 import { drawText, textWidth } from './font.ts'
 import { type Animation, SCREEN_H, SCREEN_W, TILE } from './render.ts'
 
-const SPRITE_BASE = `${import.meta.env.BASE_URL}sprites/frames/`
+const SPRITE_BASE = `${import.meta.env.BASE_URL}sprites/`
 
 interface Sprites {
   playerIdle: HTMLImageElement[]
