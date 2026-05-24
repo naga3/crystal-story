@@ -105,10 +105,33 @@ export function renderTitle(ctx: CanvasRenderingContext2D, now: number): void {
   tintCtx.globalCompositeOperation = 'source-over'
   ctx.drawImage(tintCanvas, 0, 0)
 
-  const hit = 'HIT ANY KEY'
-  drawText(ctx, hit, Math.floor((SCREEN_W - textWidth(hit)) / 2), SCREEN_H - 32, '#fff')
+  const labels = ['ORIGINAL', 'ARRANGE'] as const
+  const baseY = SCREEN_H - 56
+  for (let i = 0; i < labels.length; i++) {
+    const sel = i === selectionIndex
+    const label = labels[i]
+    const x = Math.floor((SCREEN_W - textWidth(label)) / 2)
+    const y = baseY + i * 12
+    if (sel) {
+      drawText(ctx, '>', x - 12, y, '#fff')
+      drawText(ctx, '<', x + textWidth(label) + 4, y, '#fff')
+    }
+    drawText(ctx, label, x, y, sel ? '#fff' : '#888')
+  }
+  const enter = 'ENTER: START'
+  drawText(ctx, enter, Math.floor((SCREEN_W - textWidth(enter)) / 2), SCREEN_H - 28, '#aaa')
   if (Math.floor(now / 600) % 2 === 0) {
     const cont = 'C: CONTINUE'
-    drawText(ctx, cont, Math.floor((SCREEN_W - textWidth(cont)) / 2), SCREEN_H - 16, '#fff')
+    drawText(ctx, cont, Math.floor((SCREEN_W - textWidth(cont)) / 2), SCREEN_H - 14, '#888')
   }
+}
+
+let selectionIndex = 0
+
+export function getSelectedModeIndex(): number {
+  return selectionIndex
+}
+
+export function setSelectedModeIndex(i: number): void {
+  selectionIndex = (i + 2) % 2
 }
