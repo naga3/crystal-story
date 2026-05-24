@@ -4,6 +4,7 @@ import { bindKeyboard, DIR_VECTORS, type Action, type Direction } from './game/i
 import { type Animation, render, SCREEN_H, SCREEN_W } from './game/render.ts'
 import { STAGES } from './game/stages.ts'
 import { renderTitle } from './game/title.ts'
+import { setupTouchUI } from './game/touch.ts'
 
 const SLIDE_MS_PER_CELL = 60
 const BREAK_MS = 240
@@ -100,6 +101,7 @@ function onAction(action: Action): void {
 }
 
 bindKeyboard({ onMove, onAction })
+setupTouchUI({ onMove, onAction })
 
 function tick(now: number): void {
   if (mode === 'title') {
