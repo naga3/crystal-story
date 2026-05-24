@@ -1,3 +1,4 @@
+import { drawText, textWidth } from './font.ts'
 import { SCREEN_H, SCREEN_W } from './render.ts'
 
 const TITLE_DATA: ReadonlyArray<readonly [number, string]> = [
@@ -104,12 +105,10 @@ export function renderTitle(ctx: CanvasRenderingContext2D, now: number): void {
   tintCtx.globalCompositeOperation = 'source-over'
   ctx.drawImage(tintCanvas, 0, 0)
 
-  ctx.fillStyle = '#fff'
-  ctx.font = '8px monospace'
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.fillText('HIT ANY KEY', SCREEN_W / 2, SCREEN_H - 28)
+  const hit = 'HIT ANY KEY'
+  drawText(ctx, hit, Math.floor((SCREEN_W - textWidth(hit)) / 2), SCREEN_H - 32, '#fff')
   if (Math.floor(now / 600) % 2 === 0) {
-    ctx.fillText('C: CONTINUE', SCREEN_W / 2, SCREEN_H - 12)
+    const cont = 'C: CONTINUE'
+    drawText(ctx, cont, Math.floor((SCREEN_W - textWidth(cont)) / 2), SCREEN_H - 16, '#fff')
   }
 }

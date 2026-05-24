@@ -1,5 +1,6 @@
 import { BRICK, CRYSTAL, EMPTY, type Board } from './board.ts'
 import { BRICK_DATA, CRYSTAL_DATA, PLAYER_DATA, spriteToCanvas, TILE_SIZE } from './chr.ts'
+import { drawText, textWidth } from './font.ts'
 
 export const TILE = TILE_SIZE
 export const SCREEN_W = 256
@@ -90,17 +91,13 @@ function drawBreak(ctx: CanvasRenderingContext2D, a: Animation & { kind: 'break'
 
 function drawStatus(ctx: CanvasRenderingContext2D, board: Board, round: number): void {
   const stepsLeft = Math.max(0, board.stepsMax - board.stepsUsed)
-  ctx.fillStyle = '#fff'
-  ctx.font = '8px monospace'
-  ctx.textBaseline = 'top'
-  ctx.textAlign = 'left'
   const baseY = BOARD_OFFSET_Y + board.height * TILE + 4
-  ctx.fillText(`STEP ${stepsLeft}  ROUND ${round}`, BOARD_OFFSET_X, baseY)
+  drawText(ctx, `STEP ${stepsLeft}  ROUND ${round}`, BOARD_OFFSET_X, baseY, '#fff')
 
   if (board.status === 'cleared') {
-    overlay(ctx, board, 'CLEAR!  (Enter)')
+    overlay(ctx, board, 'CLEAR! (ENTER)')
   } else if (board.status === 'stuck') {
-    overlay(ctx, board, 'STUCK  (R: retry, G: title)')
+    overlay(ctx, board, 'STUCK (R:RETRY G:TITLE)')
   }
 }
 
@@ -109,9 +106,12 @@ function overlay(ctx: CanvasRenderingContext2D, board: Board, msg: string): void
   const innerH = board.height * TILE
   ctx.fillStyle = 'rgba(0,0,0,0.6)'
   ctx.fillRect(BOARD_OFFSET_X, BOARD_OFFSET_Y, innerW, innerH)
-  ctx.fillStyle = '#fff'
-  ctx.font = '8px monospace'
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.fillText(msg, BOARD_OFFSET_X + innerW / 2, BOARD_OFFSET_Y + innerH / 2)
+  const tw = textWidth(msg)
+  drawText(
+    ctx,
+    msg,
+    BOARD_OFFSET_X + Math.floor((innerW - tw) / 2),
+    BOARD_OFFSET_Y + Math.floor(innerH / 2) - 4,
+    '#fff',
+  )
 }
