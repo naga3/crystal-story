@@ -1,6 +1,6 @@
 # CRYSTAL STORY
 
-マイコンBASICマガジン 1988年掲載のMSX2 BASICゲーム「CRYSTAL STORY」（作：永山治）を、現代のブラウザで遊べるよう移植したものです。
+マイコンBASICマガジン 1988年2月号掲載のMSX2 BASICゲーム「CRYSTAL STORY」を、現代のブラウザで遊べるよう移植したものです。
 
 **▷ [ブラウザで遊ぶ](https://naga3.github.io/crystal-story/)**
 
@@ -51,4 +51,4 @@ npm run build     # 本番ビルド → dist/
 
 ARRANGEモードで使う第三者素材は全て **CC0**（パブリックドメイン）です。詳細は [CREDITS.md](CREDITS.md) を参照してください。
 
-原典の BASIC プログラム由来のロジック・ステージデータ・グラフィックは、作者本人（永山治）による移植です。
+原典の BASIC プログラム由来のロジック・ステージデータ・グラフィックは、原作者本人による移植です。
