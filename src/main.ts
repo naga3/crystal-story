@@ -19,7 +19,8 @@ import { checkStatus, loadStage, step, type Board } from './game/board.ts'
 import { bindKeyboard, DIR_VECTORS, type Action, type Direction } from './game/input.ts'
 import { type Animation, render, SCREEN_H, SCREEN_W, TILE } from './game/render.ts'
 import { STAGES } from './game/stages.ts'
-import { getSelectedModeIndex, renderTitle, setSelectedModeIndex } from './game/title.ts'
+import { hideHelp, isHelpVisible, showHelp } from './game/help.ts'
+import { getSelectedModeIndex, MENU_LABELS, renderTitle, setSelectedModeIndex } from './game/title.ts'
 import { setupTouchUI } from './game/touch.ts'
 
 const SLIDE_MS_PER_CELL = 60
@@ -66,6 +67,7 @@ function toTitle(): void {
 }
 
 function onMove(dir: Direction): void {
+  if (isHelpVisible()) return
   ensureAudio()
   resumeArrangeAudio()
   if (mode === 'title') {
@@ -116,10 +118,19 @@ function onMove(dir: Direction): void {
 }
 
 function onAction(action: Action): void {
+  if (isHelpVisible()) {
+    if (action === 'next' || action === 'giveup') hideHelp()
+    return
+  }
   ensureAudio()
   resumeArrangeAudio()
   if (mode === 'title') {
-    const v: Variant = getSelectedModeIndex() === 0 ? 'original' : 'arrange'
+    const selected = MENU_LABELS[getSelectedModeIndex()]
+    if (selected === 'HOW TO PLAY') {
+      if (action === 'next') showHelp()
+      return
+    }
+    const v: Variant = selected === 'ORIGINAL' ? 'original' : 'arrange'
     if (action === 'continue') startStage(roundIdx, v)
     else startStage(0, v)
     return

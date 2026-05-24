@@ -105,8 +105,8 @@ export function renderTitle(ctx: CanvasRenderingContext2D, now: number): void {
   tintCtx.globalCompositeOperation = 'source-over'
   ctx.drawImage(tintCanvas, 0, 0)
 
-  const labels = ['ORIGINAL', 'ARRANGE'] as const
-  const baseY = SCREEN_H - 56
+  const labels = MENU_LABELS
+  const baseY = SCREEN_H - 64
   for (let i = 0; i < labels.length; i++) {
     const sel = i === selectionIndex
     const label = labels[i]
@@ -126,6 +126,9 @@ export function renderTitle(ctx: CanvasRenderingContext2D, now: number): void {
   }
 }
 
+export const MENU_LABELS = ['ORIGINAL', 'ARRANGE', 'HOW TO PLAY'] as const
+export type MenuItem = (typeof MENU_LABELS)[number]
+
 let selectionIndex = 0
 
 export function getSelectedModeIndex(): number {
@@ -133,5 +136,6 @@ export function getSelectedModeIndex(): number {
 }
 
 export function setSelectedModeIndex(i: number): void {
-  selectionIndex = (i + 2) % 2
+  const n = MENU_LABELS.length
+  selectionIndex = ((i % n) + n) % n
 }

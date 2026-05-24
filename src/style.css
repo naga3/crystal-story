@@ -83,3 +83,121 @@ html, body {
 #touch button:active {
   background: rgba(255, 255, 255, 0.35);
 }
+
+body.help-visible #touch {
+  display: none;
+}
+
+#help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  z-index: 100;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "Hiragino Sans", Meiryo, sans-serif;
+  color: #eee;
+  overflow: auto;
+  padding: 16px;
+  box-sizing: border-box;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+#help-overlay.show {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.help-panel {
+  background: #18181b;
+  border: 1px solid #3a3a45;
+  border-radius: 10px;
+  padding: 24px 28px;
+  max-width: 540px;
+  width: 100%;
+  margin: 20px 0;
+  line-height: 1.6;
+}
+
+.help-panel h1 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+}
+
+.help-panel h2 {
+  margin: 18px 0 6px;
+  font-size: 15px;
+  color: #9cd6ff;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.help-panel p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.help-panel ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+  font-size: 14px;
+}
+
+.help-panel ul li {
+  margin: 4px 0;
+}
+
+.help-panel table {
+  margin: 6px 0;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.help-panel td {
+  padding: 4px 8px;
+  vertical-align: top;
+}
+
+.help-panel td:first-child {
+  white-space: nowrap;
+}
+
+.help-panel kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  margin: 0 1px;
+  background: #2a2a35;
+  border: 1px solid #555;
+  border-radius: 4px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+}
+
+.help-panel .hint {
+  margin-top: 14px;
+  color: #888;
+  font-size: 12px;
+}
+
+.help-close {
+  appearance: none;
+  margin-top: 18px;
+  padding: 8px 24px;
+  background: #2a4a7a;
+  color: #fff;
+  border: 1px solid #4a7ab0;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.help-close:hover {
+  background: #355a8c;
+}
+
+.help-close:active {
+  background: #244170;
+}
