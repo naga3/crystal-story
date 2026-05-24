@@ -1,3 +1,4 @@
+import { ensureAudio, playBreak, playClear, playGiveUp } from './game/audio.ts'
 import { checkStatus, loadStage, step, type Board } from './game/board.ts'
 import { bindKeyboard, DIR_VECTORS, type Action, type Direction } from './game/input.ts'
 import { type Animation, render, SCREEN_H, SCREEN_W } from './game/render.ts'
@@ -25,6 +26,7 @@ function newStage(idx: number): void {
 }
 
 function onMove(dir: Direction): void {
+  ensureAudio()
   if (animations.length > 0) return
   if (board.status !== 'playing') return
 
@@ -53,11 +55,13 @@ function onMove(dir: Direction): void {
       start: now,
       duration: BREAK_MS,
     })
+    playBreak()
     pendingStatus = true
   }
 }
 
 function onAction(action: Action): void {
+  ensureAudio()
   if (animations.length > 0) return
   if (action === 'next' && board.status === 'cleared') {
     newStage((roundIdx + 1) % STAGES.length)
@@ -68,6 +72,7 @@ function onAction(action: Action): void {
     return
   }
   if (action === 'giveup') {
+    playGiveUp()
     newStage(0)
   }
 }
@@ -81,8 +86,10 @@ function tick(now: number): void {
     }
   }
   if (animations.length === 0 && pendingStatus) {
+    const prevStatus = board.status
     checkStatus(board)
     pendingStatus = false
+    if (prevStatus === 'playing' && board.status === 'cleared') playClear()
   }
   render(ctx, board, roundIdx + 1, animations, now)
   requestAnimationFrame(tick)
