@@ -7,6 +7,13 @@ import {
   loadArrangeSprites,
   renderArrange,
 } from './game/arrange.ts'
+import {
+  loadArrangeAudio,
+  playArrangeSfx,
+  resumeArrangeAudio,
+  startArrangeBgm,
+  stopArrangeBgm,
+} from './game/arrangeAudio.ts'
 import { ensureAudio, playBreak, playClear, playGiveUp } from './game/audio.ts'
 import { checkStatus, loadStage, step, type Board } from './game/board.ts'
 import { bindKeyboard, DIR_VECTORS, type Action, type Direction } from './game/input.ts'
@@ -28,6 +35,7 @@ const ctx = canvas.getContext('2d')!
 ctx.imageSmoothingEnabled = false
 
 void loadArrangeSprites().catch((e: unknown) => console.error('arrange sprites failed:', e))
+void loadArrangeAudio().catch((e: unknown) => console.error('arrange audio failed:', e))
 
 let mode: Mode = 'title'
 let variant: Variant = 'original'
@@ -46,16 +54,20 @@ function startStage(idx: number, v: Variant): void {
   pendingStatus = false
   mode = 'playing'
   arrangeReset()
+  if (v === 'arrange') startArrangeBgm()
+  else stopArrangeBgm()
 }
 
 function toTitle(): void {
   mode = 'title'
   titleStart = performance.now()
   arrangeReset()
+  stopArrangeBgm()
 }
 
 function onMove(dir: Direction): void {
   ensureAudio()
+  resumeArrangeAudio()
   if (mode === 'title') {
     if (dir === 'up') setSelectedModeIndex(getSelectedModeIndex() - 1)
     else if (dir === 'down') setSelectedModeIndex(getSelectedModeIndex() + 1)
@@ -82,6 +94,7 @@ function onMove(dir: Direction): void {
       start: now,
       duration: SLIDE_MS_PER_CELL * distance,
     })
+    if (variant === 'arrange') playArrangeSfx('slide', { durationMs: SLIDE_MS_PER_CELL * distance + 40 })
     pendingStatus = true
   } else if (event.kind === 'broken') {
     animations.push({
@@ -90,11 +103,13 @@ function onMove(dir: Direction): void {
       start: now,
       duration: BREAK_MS,
     })
-    playBreak()
     if (variant === 'arrange') {
+      playArrangeSfx('break')
       const ox = Math.floor((SCREEN_W - board.width * TILE) / 2)
       const oy = Math.floor((SCREEN_H - board.height * TILE) / 2) - 4
       arrangeOnBreak(event.pos.x, event.pos.y, ox, oy)
+    } else {
+      playBreak()
     }
     pendingStatus = true
   }
@@ -102,6 +117,7 @@ function onMove(dir: Direction): void {
 
 function onAction(action: Action): void {
   ensureAudio()
+  resumeArrangeAudio()
   if (mode === 'title') {
     const v: Variant = getSelectedModeIndex() === 0 ? 'original' : 'arrange'
     if (action === 'continue') startStage(roundIdx, v)
@@ -120,7 +136,8 @@ function onAction(action: Action): void {
     return
   }
   if (action === 'giveup') {
-    playGiveUp()
+    if (variant === 'arrange') playArrangeSfx('giveup')
+    else playGiveUp()
     toTitle()
   }
 }
@@ -146,8 +163,12 @@ function tick(now: number): void {
     checkStatus(board)
     pendingStatus = false
     if (prev === 'playing' && board.status === 'cleared') {
-      playClear()
-      if (variant === 'arrange') arrangeOnClear()
+      if (variant === 'arrange') {
+        playArrangeSfx('clear')
+        arrangeOnClear()
+      } else {
+        playClear()
+      }
     }
   }
   if (variant === 'arrange') renderArrange(ctx, board, roundIdx + 1, animations, now)
