@@ -1,0 +1,28 @@
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  font-family: monospace;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+#screen {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  width: min(100vw, calc(100vh * 256 / 212));
+  height: auto;
+  aspect-ratio: 256 / 212;
+  background: #000;
+}
