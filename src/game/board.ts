@@ -78,7 +78,6 @@ export function step(b: Board, dx: number, dy: number): StepEvent {
   }
 
   if (ex === nx && ey === ny) {
-    afterTurn(b)
     return { kind: 'broken', pos: { x: nx, y: ny } }
   }
 
@@ -91,11 +90,11 @@ export function step(b: Board, dx: number, dy: number): StepEvent {
     }
   }
 
-  afterTurn(b)
   return { kind: 'pushed', cell: target, from: { x: nx, y: ny }, to: { x: ex, y: ey } }
 }
 
-function afterTurn(b: Board): void {
+export function checkStatus(b: Board): void {
+  if (b.status !== 'playing') return
   if (checkWin(b)) {
     b.status = 'cleared'
     return
