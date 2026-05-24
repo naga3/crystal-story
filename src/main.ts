@@ -3,6 +3,7 @@ import { checkStatus, loadStage, step, type Board } from './game/board.ts'
 import { bindKeyboard, DIR_VECTORS, type Action, type Direction } from './game/input.ts'
 import { type Animation, render, SCREEN_H, SCREEN_W } from './game/render.ts'
 import { STAGES } from './game/stages.ts'
+import { renderTitle } from './game/title.ts'
 
 const SLIDE_MS_PER_CELL = 60
 const BREAK_MS = 240
@@ -13,20 +14,34 @@ canvas.height = SCREEN_H
 const ctx = canvas.getContext('2d')!
 ctx.imageSmoothingEnabled = false
 
+type Mode = 'title' | 'playing'
+let mode: Mode = 'title'
+let titleStart = performance.now()
+
 let roundIdx = 0
 let board: Board = loadStage(STAGES[roundIdx])
 const animations: Animation[] = []
 let pendingStatus = false
 
-function newStage(idx: number): void {
+function startStage(idx: number): void {
   roundIdx = idx
   board = loadStage(STAGES[roundIdx])
   animations.length = 0
   pendingStatus = false
+  mode = 'playing'
+}
+
+function toTitle(): void {
+  mode = 'title'
+  titleStart = performance.now()
 }
 
 function onMove(dir: Direction): void {
   ensureAudio()
+  if (mode === 'title') {
+    startStage(0)
+    return
+  }
   if (animations.length > 0) return
   if (board.status !== 'playing') return
 
@@ -62,24 +77,36 @@ function onMove(dir: Direction): void {
 
 function onAction(action: Action): void {
   ensureAudio()
+  if (mode === 'title') {
+    if (action === 'continue') startStage(roundIdx)
+    else startStage(0)
+    return
+  }
   if (animations.length > 0) return
   if (action === 'next' && board.status === 'cleared') {
-    newStage((roundIdx + 1) % STAGES.length)
+    const next = roundIdx + 1
+    if (next >= STAGES.length) toTitle()
+    else startStage(next)
     return
   }
   if (action === 'restart') {
-    newStage(roundIdx)
+    startStage(roundIdx)
     return
   }
   if (action === 'giveup') {
     playGiveUp()
-    newStage(0)
+    toTitle()
   }
 }
 
 bindKeyboard({ onMove, onAction })
 
 function tick(now: number): void {
+  if (mode === 'title') {
+    renderTitle(ctx, now - titleStart)
+    requestAnimationFrame(tick)
+    return
+  }
   for (let i = animations.length - 1; i >= 0; i--) {
     if (now - animations[i].start >= animations[i].duration) {
       animations.splice(i, 1)

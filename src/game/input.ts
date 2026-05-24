@@ -1,5 +1,5 @@
 export type Direction = 'up' | 'down' | 'left' | 'right'
-export type Action = 'giveup' | 'restart' | 'next'
+export type Action = 'giveup' | 'restart' | 'next' | 'continue'
 
 export interface InputHandlers {
   onMove(dir: Direction): void
@@ -36,6 +36,10 @@ export function bindKeyboard(handlers: InputHandlers): () => void {
     }
     if (ev.key === 'r' || ev.key === 'R') {
       handlers.onAction('restart')
+      return
+    }
+    if (ev.key === 'c' || ev.key === 'C') {
+      handlers.onAction('continue')
       return
     }
     if (ev.key === 'Enter' || ev.key === ' ') {
