@@ -1,10 +1,15 @@
 import { BRICK, CRYSTAL, EMPTY, type Board } from './board.ts'
+import { BRICK_DATA, CRYSTAL_DATA, PLAYER_DATA, spriteToCanvas, TILE_SIZE } from './chr.ts'
 
-export const TILE = 16
+export const TILE = TILE_SIZE
 export const SCREEN_W = 256
 export const SCREEN_H = 212
 const BOARD_OFFSET_X = 8
 const BOARD_OFFSET_Y = 8
+
+const CRYSTAL_SPRITE = spriteToCanvas(CRYSTAL_DATA)
+const BRICK_SPRITE = spriteToCanvas(BRICK_DATA)
+const PLAYER_SPRITE = spriteToCanvas(PLAYER_DATA)
 
 export function render(ctx: CanvasRenderingContext2D, board: Board, round: number): void {
   ctx.fillStyle = '#000'
@@ -18,59 +23,21 @@ export function render(ctx: CanvasRenderingContext2D, board: Board, round: numbe
 
   for (let y = 0; y < board.height; y++) {
     for (let x = 0; x < board.width; x++) {
-      drawCell(ctx, x, y, board.cells[y][x])
+      const cell = board.cells[y][x]
+      if (cell === EMPTY) continue
+      const sprite = cell === BRICK ? BRICK_SPRITE : cell === CRYSTAL ? CRYSTAL_SPRITE : null
+      if (sprite) {
+        ctx.drawImage(sprite, BOARD_OFFSET_X + x * TILE, BOARD_OFFSET_Y + y * TILE)
+      }
     }
   }
-  drawPlayer(ctx, board.player.x, board.player.y)
+  ctx.drawImage(PLAYER_SPRITE, BOARD_OFFSET_X + board.player.x * TILE, BOARD_OFFSET_Y + board.player.y * TILE)
 
+  drawStatus(ctx, board, round)
+}
+
+function drawStatus(ctx: CanvasRenderingContext2D, board: Board, round: number): void {
   const stepsLeft = Math.max(0, board.stepsMax - board.stepsUsed)
-  drawStatus(ctx, board, round, stepsLeft)
-}
-
-function drawCell(ctx: CanvasRenderingContext2D, gx: number, gy: number, cell: number): void {
-  if (cell === EMPTY) return
-  const px = BOARD_OFFSET_X + gx * TILE
-  const py = BOARD_OFFSET_Y + gy * TILE
-  if (cell === BRICK) drawBrick(ctx, px, py)
-  else if (cell === CRYSTAL) drawCrystal(ctx, px, py)
-}
-
-function drawBrick(ctx: CanvasRenderingContext2D, px: number, py: number): void {
-  ctx.fillStyle = '#888'
-  ctx.fillRect(px + 1, py + 1, TILE - 2, TILE - 2)
-  ctx.fillStyle = '#aaa'
-  ctx.fillRect(px + 2, py + 2, TILE - 4, 2)
-  ctx.fillRect(px + 2, py + 2, 2, TILE - 4)
-  ctx.fillStyle = '#555'
-  ctx.fillRect(px + 2, py + TILE - 4, TILE - 4, 2)
-  ctx.fillRect(px + TILE - 4, py + 2, 2, TILE - 4)
-}
-
-function drawCrystal(ctx: CanvasRenderingContext2D, px: number, py: number): void {
-  const cx = px + TILE / 2
-  const cy = py + TILE / 2
-  ctx.fillStyle = '#3df';
-  ctx.beginPath()
-  ctx.arc(cx, cy, 6, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.fillStyle = '#fff'
-  ctx.beginPath()
-  ctx.arc(cx - 2, cy - 2, 1.5, 0, Math.PI * 2)
-  ctx.fill()
-}
-
-function drawPlayer(ctx: CanvasRenderingContext2D, gx: number, gy: number): void {
-  const cx = BOARD_OFFSET_X + gx * TILE + TILE / 2
-  const cy = BOARD_OFFSET_Y + gy * TILE + TILE / 2
-  ctx.fillStyle = '#fc4'
-  ctx.beginPath()
-  ctx.arc(cx, cy, 6, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.fillStyle = '#082'
-  ctx.fillRect(cx - 1, cy - 8, 2, 3)
-}
-
-function drawStatus(ctx: CanvasRenderingContext2D, board: Board, round: number, stepsLeft: number): void {
   ctx.fillStyle = '#fff'
   ctx.font = '8px monospace'
   ctx.textBaseline = 'top'
